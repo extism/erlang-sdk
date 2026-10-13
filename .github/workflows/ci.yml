@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: OTP ${{ matrix.otp }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04]
+        otp: ["29.1.1"]
+        rebar3: ["3.27.0"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Erlang/OTP and rebar3
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          rebar3-version: ${{ matrix.rebar3 }}
+          version-type: strict
+
+      - name: Cache rebar3
+        uses: actions/cache@v4
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+          key: ${{ runner.os }}-otp-${{ matrix.otp }}-rebar3-${{ hashFiles('rebar.lock', 'rebar.config') }}
+
+      - name: Compile
+        run: rebar3 compile
+
+      - name: Common Test
+        run: rebar3 ct --verbose
+
+      - name: Example
+        run: escript examples/count_vowels.escript "Hello, World!"
+
+      - name: Upload Common Test logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct-logs-${{ matrix.os }}-otp-${{ matrix.otp }}
+          path: _build/test/logs
+          if-no-files-found: ignore
