@@ -1,0 +1,23 @@
+{application, extism, [
+    {description, "Native Extism Host SDK for Erlang, built on erlang_wasm"},
+    {vsn, "0.1.0"},
+    {registered, [extism_sup]},
+    {mod, {extism_app, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        crypto,
+        inets,
+        ssl,
+        public_key,
+        wasm
+    ]},
+    {env, []},
+    {modules, []},
+    {licenses, ["BSD-3-Clause"]},
+    {links, [
+        {"GitHub", "https://github.com/extism/erlang-sdk"},
+        {"Extism", "https://extism.org"},
+        {"erlang_wasm", "https://github.com/benoitc/erlang_wasm"}
+    ]}
+]}.

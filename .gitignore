@@ -1,0 +1,16 @@
+_build/
+_checkouts/
+*.beam
+*.plt
+*.plt.new
+erl_crash.dump
+rebar3.crashdump
+.rebar3/
+eunit.coverdata
+cover/
+doc/
+logs/
+_build/test/logs/
+.idea/
+*.iml
+.DS_Store
